@@ -38,6 +38,7 @@ const tareaSchema = mongoose.Schema(
     responsable: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
+      default: null,
     },
   },
   {
