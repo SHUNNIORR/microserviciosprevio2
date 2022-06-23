@@ -208,6 +208,50 @@ res.json(tarea);
 
 };
 
+const obtenerTareasPorFecha = async (req, res) => {
+  const { id } = req.params;
+  const {fechainicial, fechafinal} = req.body
+
+  try {
+    
+  
+    if(fechainicial===null && fechafinal===null){
+      const tarea = await Tarea.find({id})
+      .populate("proyecto", "nombre")
+      .populate("completado", "nombre")
+      .populate("responsable", "nombre");
+  
+    if (!tarea) {
+      const error = new Error("Tarea no encontrada");
+      return res.status(404).json({ msg: error.message });
+    }
+  
+    res.json(tarea);
+    } else{
+      const tarea = await Tarea.find(
+        {"fechaEntrega": {"$gte": new Date(fechainicial), "$lt": new Date(fechafinal)}}
+      )
+        .populate("proyecto", "nombre")
+        .populate("completado", "nombre")
+        .populate("responsable", "nombre");
+    
+      if (!tarea) {
+        const error = new Error("Tarea no encontrada");
+        return res.status(404).json({ msg: error.message });
+      }
+    
+      res.json(tarea);
+  
+    }
+    
+  } catch (error) {
+      res.status(401).json({
+        "Error":"Envia fechas por favor para la busqueda"
+      });
+  }
+
+};
+
 export {
   agregarTarea,
   obtenerTarea,
@@ -215,5 +259,6 @@ export {
   eliminarTarea,
   cambiarEstado,
   agregarResponsable,
-  obtenerTareasPorUsuario
+  obtenerTareasPorUsuario,
+  obtenerTareasPorFecha
 };
